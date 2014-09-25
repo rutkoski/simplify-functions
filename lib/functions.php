@@ -170,16 +170,16 @@ function sy_checkbox_to_bool($value)
   return (empty($value) || strtolower($value) == 'off') ? 0 : 1;
 }
 
-function sy_array_map(&$item, $key)
+function sy_array_map(&$item, $key, $c = 0)
 {
   if ($item instanceof ArrayObject) {
     $item = $item->getArrayCopy();
-    array_walk_recursive($item, 'sy_array_map');
+    array_walk_recursive($item, 'sy_array_map', $c + 1);
   }
 
   elseif ($item instanceof Simplify_DictionaryInterface) {
     $item = $item->getAll();
-    array_walk_recursive($item, 'sy_array_map');
+    array_walk_recursive($item, 'sy_array_map', $c + 1);
   }
 
   elseif ($item instanceof Simplify_URL) {
@@ -189,6 +189,11 @@ function sy_array_map(&$item, $key)
   elseif ($item instanceof DateTime) {
     $item = $item->format('Y-m-d h:i:s');
   }
+}
+
+function sy_current_timestamp()
+{
+  return date('Y-m-d H:i:s');
 }
 
 function sy_array_to_options($data, $key, $value = null)
@@ -459,7 +464,7 @@ function sy_define_once($name, $value)
  */
 function sy_path_is_absolute($path)
 {
-  return PATH_SEPARATOR == ';' ? preg_match('#^([a-z]:.+)$#i', $path) : file_exists($path);
+  return preg_match('#^(?:\/|\\\\|\w:\\\\|\w:\/).*$#', $path);//PATH_SEPARATOR == ';' ? preg_match('#^([a-z]:.+)$#i', $path) : preg_match('#^/.+#i', $path);//file_exists($path);
 }
 
 /**
