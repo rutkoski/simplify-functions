@@ -464,7 +464,7 @@ function sy_define_once($name, $value)
  */
 function sy_path_is_absolute($path)
 {
-  return preg_match('#^(?:\/|\\\\|\w:\\\\|\w:\/).*$#', $path);//PATH_SEPARATOR == ';' ? preg_match('#^([a-z]:.+)$#i', $path) : preg_match('#^/.+#i', $path);//file_exists($path);
+  return PATH_SEPARATOR == ';' ? preg_match('#^([a-z]:.+)$#i', $path) : preg_match('#^/.+#i', $path);
 }
 
 /**
