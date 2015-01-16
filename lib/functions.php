@@ -24,16 +24,16 @@
 
 /**
  *
- * @return Simplify_HtmlElement
+ * @return \Simplify\HtmlElement
  */
 function e($e = null, $attrs = array())
 {
-  if ($e instanceof Simplify_HtmlElement) {
+  if ($e instanceof \Simplify\HtmlElement) {
     $e->attr($attrs);
     return $e;
   }
 
-  return new Simplify_HtmlElement($e, $attrs);
+  return new \Simplify\HtmlElement($e, $attrs);
 }
 
 /**
@@ -170,30 +170,25 @@ function sy_checkbox_to_bool($value)
   return (empty($value) || strtolower($value) == 'off') ? 0 : 1;
 }
 
-function sy_array_map(&$item, $key, $c = 0)
+function sy_array_map(&$item, $key)
 {
   if ($item instanceof ArrayObject) {
     $item = $item->getArrayCopy();
-    array_walk_recursive($item, 'sy_array_map', $c + 1);
+    array_walk_recursive($item, 'sy_array_map');
   }
 
-  elseif ($item instanceof Simplify_DictionaryInterface) {
+  elseif ($item instanceof \Simplify\DictionaryInterface) {
     $item = $item->getAll();
-    array_walk_recursive($item, 'sy_array_map', $c + 1);
+    array_walk_recursive($item, 'sy_array_map');
   }
 
-  elseif ($item instanceof Simplify_URL) {
+  elseif ($item instanceof \Simplify\URL) {
     $item = (array) $item;
   }
 
   elseif ($item instanceof DateTime) {
     $item = $item->format('Y-m-d h:i:s');
   }
-}
-
-function sy_current_timestamp()
-{
-  return date('Y-m-d H:i:s');
 }
 
 function sy_array_to_options($data, $key, $value = null)
@@ -326,7 +321,7 @@ if (!function_exists('pre')) {
  */
 function sy_get_param($source, $param, $default = null, $testEmpty = false)
 {
-  if ($source instanceof Simplify_DictionaryInterface) {
+  if ($source instanceof \Simplify\DictionaryInterface) {
     return $source->get($param, $default, $testEmpty);
   }
   elseif (is_array($source) || $source instanceof ArrayAccess) {
@@ -365,7 +360,7 @@ function sy_get_data(&$source)
   if (is_array($source)) {
     return $source;
   }
-  elseif ($source instanceof Simplify_DictionaryInterface) {
+  elseif ($source instanceof \Simplify\DictionaryInterface) {
     return $source->getAll();
   }
 
@@ -404,7 +399,7 @@ function sy_fix_url($url, $traillingSlash = false)
 function sy_absolute_url($url, $relative = null, $base = null)
 {
   if (empty($base)) {
-    $base = s::config()->get('theme_url');
+    $base = Simplify::config()->get('theme_url');
   }
 
   if (empty($relative)) {
