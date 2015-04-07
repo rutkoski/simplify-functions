@@ -528,6 +528,68 @@ function sy_slugify($string, $ignoreCase = false)
   return trim($string, '-');
 }
 
+function sy_group_by($data, $field)
+{
+  $grouped = array();
+
+  foreach ($data as $row) {
+    if (! empty($key)) {
+      $grouped[sy_get_param($row, $field)][$row[$key]] = $row;
+    } else {
+      $grouped[sy_get_param($row, $field)][] = $row;
+    }
+  }
+
+  if (func_num_args() > 2) {
+    $args = func_get_args();
+    unset($args[1]);
+
+    foreach ($grouped as $key => $group) {
+      $args[0] = $group;
+      $grouped[$key] = call_user_func_array('sy_group_by', $args);
+    }
+  }
+
+  return $grouped;
+}
+
+function sy_unprefix($data, $prefix, $group = null, $separator = '_')
+{
+  $unprefixed = array();
+
+  $prefix = $prefix;
+
+  if (is_null($group)) {
+    if (($p = strrpos($prefix, $separator)) !== false) {
+      $group = substr($prefix, 0, $p);
+    } else {
+      $group = $prefix;
+    }
+  }
+
+  foreach ($data as $key => $value) {
+    if (strpos($key, $prefix . $separator) === 0) {
+      $key = substr($key, strlen($prefix . $separator));
+
+      if ($group === false) {
+        $unprefixed[$key] = $value;
+      } else {
+        $unprefixed[$group][$key] = $value;
+      }
+    } else {
+      $unprefixed[$key] = $value;
+    }
+  }
+
+  return $unprefixed;
+}
+
+function sy_unprefix_all(&$arr, $prefix, $group = null, $separator = '_') {
+  foreach ($arr as &$row) {
+    $row = sy_unprefix($row, $prefix, $group, $separator);
+  }
+}
+
 /**
  * Convert a flat array with inner references (such as parent_id) to hierarchical structure
  *
@@ -764,4 +826,29 @@ function sy_cnpj($compontos = true, $seed = null)
     $retorno = '' . $n1 . $n2 . $n3 . $n4 . $n5 . $n6 . $n7 . $n8 . $n9 . $n10 . $n11 . $n12 . $d1 . $d2;
   }
   return $retorno;
+}
+
+if (class_exists('\SqlFormatter')) {
+  function sy_format_sql($query, array $data = null)
+  {
+    if (! empty($data)) {
+      foreach ($data as $name => $value) {
+        $query = str_replace(':' . $name, \Simplify::db()->quote($value), $query);
+      }
+    }
+    \SqlFormatter::$reserved_attributes = 'style="color: #F00; font-weight: bold;"';
+    \SqlFormatter::$word_attributes = 'style="color: #00F;"';
+    \SqlFormatter::$use_pre = false;
+    return "\n" . \SqlFormatter::format($query) . "\n";
+  }
+} else {
+  function sy_format_sql($query, array $data = null)
+  {
+    if (! empty($data)) {
+      foreach ($data as $name => $value) {
+        $query = str_replace(':' . $name, \Simplify::db()->quote($value), $query);
+      }
+    }
+    return $query;
+  }
 }
