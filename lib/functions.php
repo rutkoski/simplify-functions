@@ -399,7 +399,7 @@ function sy_fix_url($url, $traillingSlash = false)
 function sy_absolute_url($url, $relative = null, $base = null)
 {
   if (empty($base)) {
-    $base = Simplify::config()->get('theme_url');
+    $base = Simplify::config()->get('www:url');
   }
 
   if (empty($relative)) {
