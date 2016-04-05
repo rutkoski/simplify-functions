@@ -605,29 +605,15 @@ function sy_flat_to_hierarchical($flat, $pk = 'id', $parent = 'parent_id', $chil
 
   $data = array();
 
-  $i = 0;
-  while ($i < count($flat)) {
-    $row = $flat[$i++];
-
-    $node_id = $row[$pk];
-    $parent_id = $row[$parent];
-
-    if (empty($parent_id)) {
-      $data[$node_id] = $row;
-      $parents[$node_id] = & $data[$node_id];
-    }
-    elseif (!isset($parents[$parent_id])) {
-      $data[$node_id] = $row;
-      $parents[$node_id] = & $data[$node_id];
-    }
-    else {
-      if (!isset($parents[$parent_id][$children])) {
-        $parents[$parent_id][$children] = array();
+  foreach ($flat as & $row) {
+      $parents[$row[$pk]] = & $row;
       }
 
-      $parents[$parent_id][$children][$node_id] = $row;
-
-      $parents[$node_id] = & $parents[$parent_id][$children][$node_id];
+  foreach ($flat as & $row) {
+      if (! $row[$parent]) {
+          $data[$row[$parent]] = $row;
+      } else {
+          $parents[$row[$parent]][$children][$row[$pk]] = & $row;
     }
   }
 
