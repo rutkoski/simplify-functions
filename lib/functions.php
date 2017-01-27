@@ -26,7 +26,7 @@
  *
  * @return \Simplify\HtmlElement
  */
-function e($e = null, $attrs = array())
+/*function e($e = null, $attrs = array())
 {
   if ($e instanceof \Simplify\HtmlElement) {
     $e->attr($attrs);
@@ -34,7 +34,7 @@ function e($e = null, $attrs = array())
   }
 
   return new \Simplify\HtmlElement($e, $attrs);
-}
+}*/
 
 /**
  * Register an autoload function using spl_autoload_register()
